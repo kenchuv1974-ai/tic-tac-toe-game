@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CyberTicTacToe | Neon Cyberpunk Web Game</title>
+  <meta name="description" content="A futuristic, neon cyberpunk Tic-Tac-Toe web game featuring local 2-Player mode, smart AI with multiple difficulties, sound effects, and confetti animations.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Ambient background glow elements -->
+  <div class="bg-orb orb-1"></div>
+  <div class="bg-orb orb-2"></div>
+  <div class="bg-orb orb-3"></div>
+  <div class="grid-overlay"></div>
+
+  <!-- Main Container -->
+  <main class="game-container">
+    <header class="game-header">
+      <div class="logo-badge">CYBERPUNK ARENA</div>
+      <h1 class="game-title">TIC <span class="neon-cyan">TAC</span> <span class="neon-pink">TOE</span></h1>
+      <p class="game-subtitle">Next-Gen Neon Grid Challenge</p>
+    </header>
+
+    <!-- Controls Bar: Mode & Audio -->
+    <section class="controls-card" aria-label="Game Configuration">
+      <div class="mode-selector">
+        <label for="mode-select" class="control-label">MODE:</label>
+        <div class="segmented-control" id="mode-control" role="radiogroup">
+          <button type="button" class="segment-btn active" data-mode="pvp" id="mode-pvp-btn">2 Players</button>
+          <button type="button" class="segment-btn" data-mode="ai" id="mode-ai-btn">vs AI</button>
+        </div>
+      </div>
+
+      <!-- AI Difficulty (Conditional) -->
+      <div class="difficulty-selector" id="difficulty-wrapper" style="display: none;">
+        <label class="control-label">AI LVL:</label>
+        <div class="segmented-control" id="diff-control">
+          <button type="button" class="segment-btn active" data-diff="easy" id="diff-easy-btn">Normal</button>
+          <button type="button" class="segment-btn" data-diff="hard" id="diff-hard-btn">Unbeatable</button>
+        </div>
+      </div>
+
+      <div class="audio-toggle-wrap">
+        <button type="button" id="audio-toggle-btn" class="icon-btn" aria-label="Toggle Sound" title="Toggle Sound">
+          <span class="icon" id="audio-icon">🔊</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- Scoreboard -->
+    <section class="scoreboard" aria-label="Scoreboard">
+      <div class="score-card player-x active-turn" id="score-card-x">
+        <div class="player-tag">
+          <span class="symbol-marker cyan">X</span>
+          <span class="player-name" id="name-x">PLAYER 1</span>
+        </div>
+        <div class="score-value" id="score-x">0</div>
+      </div>
+
+      <div class="score-card ties" id="score-card-tie">
+        <div class="player-tag">
+          <span class="symbol-marker neutral">—</span>
+          <span class="player-name">TIES</span>
+        </div>
+        <div class="score-value" id="score-tie">0</div>
+      </div>
+
+      <div class="score-card player-o" id="score-card-o">
+        <div class="player-tag">
+          <span class="symbol-marker pink">O</span>
+          <span class="player-name" id="name-o">PLAYER 2</span>
+        </div>
+        <div class="score-value" id="score-o">0</div>
+      </div>
+    </section>
+
+    <!-- Turn Status Banner -->
+    <div class="status-banner" id="status-banner">
+      <span class="pulse-indicator" id="status-indicator"></span>
+      <span class="status-text" id="status-text">PLAYER X'S TURN</span>
+    </div>
+
+    <!-- 3x3 Game Board Grid -->
+    <div class="board-wrapper">
+      <div class="board" id="board" role="grid" aria-label="Tic Tac Toe Board">
+        <button class="cell" data-index="0" id="cell-0" role="gridcell" aria-label="Cell 1"></button>
+        <button class="cell" data-index="1" id="cell-1" role="gridcell" aria-label="Cell 2"></button>
+        <button class="cell" data-index="2" id="cell-2" role="gridcell" aria-label="Cell 3"></button>
+        <button class="cell" data-index="3" id="cell-3" role="gridcell" aria-label="Cell 4"></button>
+        <button class="cell" data-index="4" id="cell-4" role="gridcell" aria-label="Cell 5"></button>
+        <button class="cell" data-index="5" id="cell-5" role="gridcell" aria-label="Cell 6"></button>
+        <button class="cell" data-index="6" id="cell-6" role="gridcell" aria-label="Cell 7"></button>
+        <button class="cell" data-index="7" id="cell-7" role="gridcell" aria-label="Cell 8"></button>
+        <button class="cell" data-index="8" id="cell-8" role="gridcell" aria-label="Cell 9"></button>
+      </div>
+
+      <!-- Winning Strike Line Canvas/Overlay -->
+      <div class="win-line" id="win-line"></div>
+    </div>
+
+    <!-- Actions / Reset Buttons -->
+    <footer class="actions-card">
+      <button type="button" class="btn btn-primary" id="restart-round-btn">
+        <span class="btn-icon">↺</span> NEW ROUND
+      </button>
+      <button type="button" class="btn btn-secondary" id="reset-all-btn">
+        <span class="btn-icon">⟲</span> RESET SCORES
+      </button>
+    </footer>
+  </main>
+
+  <!-- Winner Modal Popup -->
+  <div class="modal-overlay" id="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-header-badge" id="modal-badge">ROUND OVER</div>
+      <h2 class="modal-title" id="modal-title">PLAYER X WINS!</h2>
+      <p class="modal-desc" id="modal-desc">Tactical dominance achieved in the arena.</p>
+      
+      <div class="modal-buttons">
+        <button type="button" class="btn btn-primary btn-large" id="modal-next-btn">NEXT ROUND</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Confetti Canvas for Celebrations -->
+  <canvas id="confetti-canvas"></canvas>
+
+  <script src="app.js"></script>
+</body>
+</html>
